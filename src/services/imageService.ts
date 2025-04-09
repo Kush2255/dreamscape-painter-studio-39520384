@@ -45,13 +45,13 @@ export const generateImages = async (params: GenerateImageParams): Promise<Gener
     const results: GeneratedImage[] = [];
     const [width, height] = params.size.split("x").map(Number);
     
-    // Generate placeholder images using placeholders with the prompt text
+    // Generate placeholder images using unsplash for demo purposes
+    // This avoids CORS issues with placekitten.com
     for (let i = 0; i < params.numImages; i++) {
       const randomSeed = Math.floor(Math.random() * 1000000);
       
-      // For the demo, we're using placeholder images from placekitten
-      // In a real app, this would be the URL returned from your image generation API
-      const url = `https://placekitten.com/${width}/${height}?${randomSeed}`;
+      // Using Unsplash source for placeholder images to avoid CORS issues
+      const url = `https://source.unsplash.com/random/${width}x${height}?sig=${randomSeed}`;
       
       results.push({
         url,
@@ -75,6 +75,7 @@ export const generateImages = async (params: GenerateImageParams): Promise<Gener
 // Function to download an image
 export const downloadImage = async (url: string, filename: string = 'generated-image.jpg') => {
   try {
+    // For CORS-enabled sources, we can use this method
     const response = await fetch(url);
     const blob = await response.blob();
     const objectUrl = URL.createObjectURL(blob);
@@ -92,6 +93,6 @@ export const downloadImage = async (url: string, filename: string = 'generated-i
     toast.success('Image downloaded successfully');
   } catch (error) {
     console.error('Error downloading image:', error);
-    toast.error('Failed to download image');
+    toast.error('Failed to download image. Try right-clicking on the image and selecting "Save Image As..."');
   }
 };
