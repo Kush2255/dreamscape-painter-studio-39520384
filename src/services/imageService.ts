@@ -32,6 +32,68 @@ export interface GeneratedImage {
   seed?: number;
 }
 
+// Categories for different types of prompts
+const CATEGORIES = {
+  nature: [1, 10, 15, 25, 33, 37, 49],
+  cityscape: [50, 65, 70, 85, 100],
+  portrait: [200, 201, 202, 203, 204],
+  abstract: [150, 160, 180, 190],
+  animals: [237, 250, 255, 260, 270],
+  technology: [300, 302, 304, 305, 310],
+  food: [400, 410, 420, 430],
+  art: [500, 510, 520, 530]
+};
+
+// Function to determine category based on prompt
+const determineCategory = (prompt: string): number[] => {
+  prompt = prompt.toLowerCase();
+  
+  if (prompt.includes("nature") || prompt.includes("landscape") || prompt.includes("mountain") || 
+      prompt.includes("forest") || prompt.includes("tree") || prompt.includes("river") || 
+      prompt.includes("ocean") || prompt.includes("sunset")) {
+    return CATEGORIES.nature;
+  }
+  
+  if (prompt.includes("city") || prompt.includes("building") || prompt.includes("urban") || 
+      prompt.includes("architecture") || prompt.includes("skyline")) {
+    return CATEGORIES.cityscape;
+  }
+  
+  if (prompt.includes("person") || prompt.includes("face") || prompt.includes("portrait") || 
+      prompt.includes("man") || prompt.includes("woman") || prompt.includes("people")) {
+    return CATEGORIES.portrait;
+  }
+  
+  if (prompt.includes("abstract") || prompt.includes("pattern") || prompt.includes("geometric") || 
+      prompt.includes("colorful") || prompt.includes("art") || prompt.includes("digital")) {
+    return CATEGORIES.abstract;
+  }
+  
+  if (prompt.includes("animal") || prompt.includes("dog") || prompt.includes("cat") || 
+      prompt.includes("bird") || prompt.includes("wildlife")) {
+    return CATEGORIES.animals;
+  }
+  
+  if (prompt.includes("technology") || prompt.includes("computer") || prompt.includes("digital") || 
+      prompt.includes("robot") || prompt.includes("futuristic") || prompt.includes("sci-fi")) {
+    return CATEGORIES.technology;
+  }
+  
+  if (prompt.includes("food") || prompt.includes("meal") || prompt.includes("fruit") || 
+      prompt.includes("vegetable") || prompt.includes("dish")) {
+    return CATEGORIES.food;
+  }
+  
+  if (prompt.includes("painting") || prompt.includes("drawing") || prompt.includes("sketch") || 
+      prompt.includes("artwork") || prompt.includes("masterpiece")) {
+    return CATEGORIES.art;
+  }
+  
+  // Default to a mix of categories
+  const allIds = Object.values(CATEGORIES).flat();
+  return allIds;
+};
+
 // Mock generation service - in a real app, this would call an actual API
 export const generateImages = async (params: GenerateImageParams): Promise<GeneratedImage[]> => {
   try {
@@ -39,18 +101,23 @@ export const generateImages = async (params: GenerateImageParams): Promise<Gener
     const loadingToast = toast.loading(`Generating ${params.numImages} image(s)...`);
     
     // For demo purposes, simulate an API call with a timeout
-    // In a real app, you would replace this with an actual API call
     await new Promise(resolve => setTimeout(resolve, 3000));
     
     const results: GeneratedImage[] = [];
     const [width, height] = params.size.split("x").map(Number);
     
-    // Generate placeholder images using picsum.photos which is more reliable
+    // Get relevant category IDs based on the prompt
+    const categoryIds = determineCategory(params.prompt);
+    
+    // Generate images that are more relevant to the prompt
     for (let i = 0; i < params.numImages; i++) {
       const randomSeed = Math.floor(Math.random() * 1000000);
+      // Pick a random ID from the appropriate category
+      const randomCategoryIndex = Math.floor(Math.random() * categoryIds.length);
+      const imageId = categoryIds[randomCategoryIndex];
       
-      // Using picsum.photos which is more reliable than unsplash random
-      const url = `https://picsum.photos/${width}/${height}?random=${randomSeed}`;
+      // Using Picsum photos with specific IDs for better context matching
+      const url = `https://picsum.photos/id/${imageId}/${width}/${height}?random=${randomSeed}`;
       
       results.push({
         url,
