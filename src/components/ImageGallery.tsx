@@ -1,8 +1,8 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Download, ZoomIn } from 'lucide-react';
+import { ExternalLink, Download, ZoomIn, X } from 'lucide-react';
 import { GeneratedImage } from '@/services/imageService';
 import { toast } from 'sonner';
 
@@ -14,12 +14,24 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ images }) => {
   const [loadingImages, setLoadingImages] = useState<{[key: number]: boolean}>({});
   const [expandedImage, setExpandedImage] = useState<string | null>(null);
 
+  // Initialize loading state for all images
+  useEffect(() => {
+    if (images.length > 0) {
+      const initialLoadingState: {[key: number]: boolean} = {};
+      images.forEach((_, index) => {
+        initialLoadingState[index] = true;
+      });
+      setLoadingImages(initialLoadingState);
+    }
+  }, [images]);
+
   if (images.length === 0) {
     return null;
   }
 
   const handleDownload = (image: GeneratedImage) => {
     try {
+      // Open in new tab for easier downloading
       window.open(image.url, '_blank');
       toast.success('Image opened in new tab. Right-click and select "Save image as..." to download');
     } catch (error) {
@@ -48,7 +60,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ images }) => {
         {images.map((image, index) => (
           <Card key={index} className="overflow-hidden group">
             <CardContent className="p-0 relative">
-              <div className={`w-full aspect-square bg-muted/30 ${loadingImages[index] ? 'animate-pulse' : ''}`}>
+              <div className={`w-full aspect-square relative ${loadingImages[index] ? 'bg-muted/30 animate-pulse' : ''}`}>
                 <img 
                   src={image.url} 
                   alt={`Generated image from prompt: ${image.prompt}`}
@@ -57,6 +69,11 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ images }) => {
                   onLoad={() => handleImageLoad(index)}
                   onError={() => handleImageError(index)}
                 />
+                {loadingImages[index] && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="h-8 w-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+                  </div>
+                )}
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-2 bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex justify-end gap-2">
                 <Button 
@@ -97,9 +114,12 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ images }) => {
             <Button 
               className="absolute top-2 right-2"
               variant="secondary"
-              onClick={() => setExpandedImage(null)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setExpandedImage(null);
+              }}
             >
-              Close
+              <X size={16} className="mr-1" /> Close
             </Button>
           </div>
         </div>

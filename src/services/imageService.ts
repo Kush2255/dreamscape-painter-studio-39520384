@@ -32,66 +32,121 @@ export interface GeneratedImage {
   seed?: number;
 }
 
-// Categories for different types of prompts
+// More specific category-to-image mappings with curated IDs that match the category
 const CATEGORIES = {
-  nature: [1, 10, 15, 25, 33, 37, 49],
-  cityscape: [50, 65, 70, 85, 100],
-  portrait: [200, 201, 202, 203, 204],
-  abstract: [150, 160, 180, 190],
-  animals: [237, 250, 255, 260, 270],
-  technology: [300, 302, 304, 305, 310],
-  food: [400, 410, 420, 430],
-  art: [500, 510, 520, 530]
+  nature: [
+    { id: 15, keywords: ["mountain", "outdoor", "landscape"] },
+    { id: 33, keywords: ["forest", "trees", "green"] },
+    { id: 37, keywords: ["valley", "scenic", "hills"] },
+    { id: 110, keywords: ["lake", "water", "serene"] },
+    { id: 64, keywords: ["beach", "ocean", "coast"] },
+    { id: 76, keywords: ["flowers", "garden", "blooms"] },
+  ],
+  cityscape: [
+    { id: 260, keywords: ["skyline", "downtown", "city"] },
+    { id: 452, keywords: ["buildings", "architecture", "urban"] },
+    { id: 429, keywords: ["street", "road", "city life"] },
+    { id: 172, keywords: ["night city", "lights", "urban night"] },
+    { id: 315, keywords: ["bridge", "infrastructure", "crossing"] },
+  ],
+  portrait: [
+    { id: 338, keywords: ["woman", "female", "portrait"] },
+    { id: 823, keywords: ["man", "male", "portrait"] },
+    { id: 660, keywords: ["child", "kid", "young"] },
+    { id: 26, keywords: ["old person", "elderly", "aged"] },
+    { id: 453, keywords: ["group", "people", "crowd"] },
+  ],
+  abstract: [
+    { id: 1084, keywords: ["pattern", "geometric", "shapes"] },
+    { id: 447, keywords: ["colorful", "vibrant", "bright"] },
+    { id: 1069, keywords: ["abstract", "artistic", "non-representational"] },
+    { id: 1020, keywords: ["texture", "surface", "material"] },
+  ],
+  animals: [
+    { id: 237, keywords: ["dog", "canine", "pet"] },
+    { id: 40, keywords: ["cat", "feline", "pet"] },
+    { id: 582, keywords: ["bird", "avian", "flying"] },
+    { id: 790, keywords: ["wildlife", "wild animal", "nature"] },
+    { id: 659, keywords: ["horse", "equine", "mammal"] },
+  ],
+  technology: [
+    { id: 0, keywords: ["computer", "tech", "device"] },
+    { id: 48, keywords: ["digital", "screen", "display"] },
+    { id: 160, keywords: ["robot", "ai", "machine"] },
+    { id: 370, keywords: ["futuristic", "sci-fi", "future"] },
+    { id: 1056, keywords: ["gadget", "electronic", "device"] },
+  ],
+  food: [
+    { id: 292, keywords: ["meal", "dish", "plate"] },
+    { id: 1080, keywords: ["fruit", "healthy", "fresh"] },
+    { id: 225, keywords: ["dessert", "sweet", "cake"] },
+    { id: 493, keywords: ["vegetable", "greens", "produce"] },
+    { id: 132, keywords: ["drink", "beverage", "liquid"] },
+  ],
+  art: [
+    { id: 200, keywords: ["painting", "artwork", "canvas"] },
+    { id: 349, keywords: ["drawing", "sketch", "illustration"] },
+    { id: 674, keywords: ["sculpture", "statue", "3d art"] },
+    { id: 423, keywords: ["masterpiece", "classic", "famous"] },
+    { id: 628, keywords: ["creative", "artistic", "imaginative"] },
+  ],
+  space: [
+    { id: 701, keywords: ["stars", "galaxy", "universe"] },
+    { id: 808, keywords: ["planets", "solar system", "cosmic"] },
+    { id: 683, keywords: ["nebula", "space cloud", "astronomical"] },
+    { id: 717, keywords: ["space", "cosmic", "astronomy"] },
+  ],
+  fantasy: [
+    { id: 326, keywords: ["magical", "fantasy", "mythical"] },
+    { id: 611, keywords: ["dragon", "creature", "mythological"] },
+    { id: 867, keywords: ["medieval", "castle", "kingdom"] },
+    { id: 501, keywords: ["fairy", "magical being", "enchanted"] },
+  ]
 };
 
-// Function to determine category based on prompt
-const determineCategory = (prompt: string): number[] => {
+// Function to find the most relevant image ID based on prompt content
+const findRelevantImageId = (prompt: string): number => {
   prompt = prompt.toLowerCase();
   
-  if (prompt.includes("nature") || prompt.includes("landscape") || prompt.includes("mountain") || 
-      prompt.includes("forest") || prompt.includes("tree") || prompt.includes("river") || 
-      prompt.includes("ocean") || prompt.includes("sunset")) {
-    return CATEGORIES.nature;
+  // Score each category based on keyword matches
+  const categoryScores = Object.entries(CATEGORIES).map(([categoryName, categoryItems]) => {
+    let score = 0;
+    
+    // For each image in the category, check for keyword matches
+    categoryItems.forEach(item => {
+      item.keywords.forEach(keyword => {
+        if (prompt.includes(keyword.toLowerCase())) {
+          score += 2; // Direct keyword match
+        } else {
+          // Check for partial matches
+          const words = prompt.split(/\s+/);
+          words.forEach(word => {
+            if (keyword.toLowerCase().includes(word) && word.length > 3) {
+              score += 1; // Partial match for longer words
+            }
+          });
+        }
+      });
+    });
+    
+    return { categoryName, score, items: categoryItems };
+  });
+  
+  // Sort categories by score (highest first)
+  categoryScores.sort((a, b) => b.score - a.score);
+  
+  // If we have a clear winner with matches
+  if (categoryScores[0].score > 0) {
+    const topCategory = categoryScores[0];
+    // Pick a random image from the top category
+    const randomIndex = Math.floor(Math.random() * topCategory.items.length);
+    return topCategory.items[randomIndex].id;
   }
   
-  if (prompt.includes("city") || prompt.includes("building") || prompt.includes("urban") || 
-      prompt.includes("architecture") || prompt.includes("skyline")) {
-    return CATEGORIES.cityscape;
-  }
-  
-  if (prompt.includes("person") || prompt.includes("face") || prompt.includes("portrait") || 
-      prompt.includes("man") || prompt.includes("woman") || prompt.includes("people")) {
-    return CATEGORIES.portrait;
-  }
-  
-  if (prompt.includes("abstract") || prompt.includes("pattern") || prompt.includes("geometric") || 
-      prompt.includes("colorful") || prompt.includes("art") || prompt.includes("digital")) {
-    return CATEGORIES.abstract;
-  }
-  
-  if (prompt.includes("animal") || prompt.includes("dog") || prompt.includes("cat") || 
-      prompt.includes("bird") || prompt.includes("wildlife")) {
-    return CATEGORIES.animals;
-  }
-  
-  if (prompt.includes("technology") || prompt.includes("computer") || prompt.includes("digital") || 
-      prompt.includes("robot") || prompt.includes("futuristic") || prompt.includes("sci-fi")) {
-    return CATEGORIES.technology;
-  }
-  
-  if (prompt.includes("food") || prompt.includes("meal") || prompt.includes("fruit") || 
-      prompt.includes("vegetable") || prompt.includes("dish")) {
-    return CATEGORIES.food;
-  }
-  
-  if (prompt.includes("painting") || prompt.includes("drawing") || prompt.includes("sketch") || 
-      prompt.includes("artwork") || prompt.includes("masterpiece")) {
-    return CATEGORIES.art;
-  }
-  
-  // Default to a mix of categories
-  const allIds = Object.values(CATEGORIES).flat();
-  return allIds;
+  // Fallback if no matches: use a random ID from any category
+  const allItems = Object.values(CATEGORIES).flat();
+  const randomItem = allItems[Math.floor(Math.random() * allItems.length)];
+  return randomItem.id;
 };
 
 // Mock generation service - in a real app, this would call an actual API
@@ -106,18 +161,15 @@ export const generateImages = async (params: GenerateImageParams): Promise<Gener
     const results: GeneratedImage[] = [];
     const [width, height] = params.size.split("x").map(Number);
     
-    // Get relevant category IDs based on the prompt
-    const categoryIds = determineCategory(params.prompt);
-    
-    // Generate images that are more relevant to the prompt
+    // Generate images that are relevant to the prompt
     for (let i = 0; i < params.numImages; i++) {
       const randomSeed = Math.floor(Math.random() * 1000000);
-      // Pick a random ID from the appropriate category
-      const randomCategoryIndex = Math.floor(Math.random() * categoryIds.length);
-      const imageId = categoryIds[randomCategoryIndex];
       
-      // Using Picsum photos with specific IDs for better context matching
-      const url = `https://picsum.photos/id/${imageId}/${width}/${height}?random=${randomSeed}`;
+      // Find the most relevant image ID based on the prompt
+      const relevantImageId = findRelevantImageId(params.prompt);
+      
+      // Use Picsum photos with specific IDs for better context matching
+      const url = `https://picsum.photos/id/${relevantImageId}/${width}/${height}?random=${randomSeed}`;
       
       results.push({
         url,
