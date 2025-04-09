@@ -45,13 +45,12 @@ export const generateImages = async (params: GenerateImageParams): Promise<Gener
     const results: GeneratedImage[] = [];
     const [width, height] = params.size.split("x").map(Number);
     
-    // Generate placeholder images using unsplash for demo purposes
-    // This avoids CORS issues with placekitten.com
+    // Generate placeholder images using picsum.photos which is more reliable
     for (let i = 0; i < params.numImages; i++) {
       const randomSeed = Math.floor(Math.random() * 1000000);
       
-      // Using Unsplash source for placeholder images to avoid CORS issues
-      const url = `https://source.unsplash.com/random/${width}x${height}?sig=${randomSeed}`;
+      // Using picsum.photos which is more reliable than unsplash random
+      const url = `https://picsum.photos/${width}/${height}?random=${randomSeed}`;
       
       results.push({
         url,
