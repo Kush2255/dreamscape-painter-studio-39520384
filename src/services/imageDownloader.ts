@@ -4,8 +4,15 @@ import { toast } from 'sonner';
 // Function to download an image
 export const downloadImage = async (url: string, filename: string = 'generated-image.jpg') => {
   try {
+    console.log(`Downloading image from: ${url}`);
+    
     // For CORS-enabled sources, we can use this method
     const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+    }
+    
     const blob = await response.blob();
     const objectUrl = URL.createObjectURL(blob);
     

@@ -5,6 +5,7 @@ export const MODELS = [
   { value: "stabilityai/stable-diffusion-xl-base-1.0", label: "Stable Diffusion XL" },
   { value: "stabilityai/sdxl-turbo", label: "SDXL Turbo" },
   { value: "prompthero/openjourney", label: "Openjourney" },
+  { value: "dreamshaper/dreamshaper-xl-turbo", label: "Dreamshaper XL Turbo" },
 ];
 
 // Sizes options

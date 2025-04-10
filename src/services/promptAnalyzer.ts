@@ -1,3 +1,4 @@
+
 import { CATEGORIES } from './categoryMapping';
 
 // Enhanced function to find the most relevant image ID based on prompt content
@@ -71,6 +72,11 @@ export const findRelevantImageId = (prompt: string): number => {
   
   // Sort categories by score (highest first)
   categoryScores.sort((a, b) => b.score - a.score);
+
+  // Debug information to help diagnose matches
+  console.log('Top category matches:', categoryScores.slice(0, 3).map(c => 
+    `${c.categoryName} (score: ${c.score.toFixed(1)}, id: ${c.bestMatchingId})`
+  ).join(', '));
   
   // If we have a clear winner with matches
   if (categoryScores[0].score > 0) {

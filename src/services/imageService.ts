@@ -15,10 +15,12 @@ export const generateImages = async (params: GenerateImageParams): Promise<Gener
     const loadingToast = toast.loading(`Generating ${params.numImages} image(s)...`);
     
     // For demo purposes, simulate an API call with a timeout
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise(resolve => setTimeout(resolve, 2000));
     
     const results: GeneratedImage[] = [];
     const [width, height] = params.size.split("x").map(Number);
+    
+    console.log(`Processing prompt: "${params.prompt}" for ${params.numImages} images at size ${width}x${height}`);
     
     // Generate images that are relevant to the prompt
     for (let i = 0; i < params.numImages; i++) {
@@ -26,6 +28,7 @@ export const generateImages = async (params: GenerateImageParams): Promise<Gener
       
       // Find the most relevant image ID based on the prompt
       const relevantImageId = findRelevantImageId(params.prompt);
+      console.log(`Selected image ID ${relevantImageId} for image ${i+1}`);
       
       // Use Picsum photos with specific IDs for better context matching
       const url = `https://picsum.photos/id/${relevantImageId}/${width}/${height}?random=${randomSeed}`;
@@ -38,7 +41,7 @@ export const generateImages = async (params: GenerateImageParams): Promise<Gener
 
       // Add a slight delay between image generation to simulate a more natural flow
       if (i < params.numImages - 1) {
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 300));
       }
     }
     
