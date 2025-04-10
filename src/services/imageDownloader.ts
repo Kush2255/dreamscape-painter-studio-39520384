@@ -1,7 +1,7 @@
 
 import { toast } from 'sonner';
 
-// Function to download an image
+// Function to download an image with improved error handling
 export const downloadImage = async (url: string, filename: string = 'generated-image.jpg') => {
   try {
     console.log(`Downloading image from: ${url}`);
@@ -30,5 +30,18 @@ export const downloadImage = async (url: string, filename: string = 'generated-i
   } catch (error) {
     console.error('Error downloading image:', error);
     toast.error('Failed to download image. Try right-clicking on the image and selecting "Save Image As..."');
+    
+    // Fallback method for browsers that support it
+    try {
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (fallbackError) {
+      console.error('Fallback download method failed:', fallbackError);
+    }
   }
 };

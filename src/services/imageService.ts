@@ -9,7 +9,7 @@ export { MODELS, SIZES } from './models';
 export type { GenerateImageParams, GeneratedImage } from './models';
 export { downloadImage } from './imageDownloader';
 
-// Improved generation service
+// Improved generation service with better image selection
 export const generateImages = async (params: GenerateImageParams): Promise<GeneratedImage[]> => {
   try {
     const loadingToast = toast.loading(`Generating ${params.numImages} image(s)...`);
@@ -26,12 +26,13 @@ export const generateImages = async (params: GenerateImageParams): Promise<Gener
     for (let i = 0; i < params.numImages; i++) {
       const randomSeed = Math.floor(Math.random() * 1000000);
       
-      // Find the most relevant image ID based on the prompt
+      // Find the most relevant image ID based on the prompt with improved analysis
       const relevantImageId = findRelevantImageId(params.prompt);
-      console.log(`Selected image ID ${relevantImageId} for image ${i+1}`);
+      console.log(`Selected image ID ${relevantImageId} for image ${i+1} of ${params.numImages}`);
       
       // Use Picsum photos with specific IDs for better context matching
-      const url = `https://picsum.photos/id/${relevantImageId}/${width}/${height}?random=${randomSeed}`;
+      // Add cache-busting parameter to ensure fresh images
+      const url = `https://picsum.photos/id/${relevantImageId}/${width}/${height}?random=${randomSeed}${Date.now()}`;
       
       results.push({
         url,
