@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Download, ZoomIn, X } from 'lucide-react';
-import { GeneratedImage, downloadImage } from '@/services/imageService';
+import { GeneratedImage } from '@/services/models';
+import { downloadImage } from '@/services/imageDownloader';
 import { toast } from 'sonner';
 
 interface ImageGalleryProps {

@@ -8,7 +8,7 @@ import EmptyState from '@/components/EmptyState';
 import GenerationSettings from '@/components/GenerationSettings';
 import { 
   generateImages, 
-  GeneratedImage, 
+  GeneratedImage,
   MODELS, 
   SIZES
 } from '@/services/imageService';
