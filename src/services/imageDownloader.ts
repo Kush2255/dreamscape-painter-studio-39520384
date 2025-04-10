@@ -7,7 +7,13 @@ export const downloadImage = async (url: string, filename: string = 'generated-i
     console.log(`Downloading image from: ${url}`);
     
     // For CORS-enabled sources, we can use this method
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      },
+      cache: 'no-store'
+    });
     
     if (!response.ok) {
       throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
