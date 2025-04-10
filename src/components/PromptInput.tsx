@@ -11,16 +11,24 @@ interface PromptInputProps {
 }
 
 const EXAMPLE_PROMPTS = [
-  "A serene mountain landscape at sunset with a flowing river",
+  "A serene mountain landscape with flowing river at sunset",
   "Futuristic cyberpunk city with neon lights and flying cars",
-  "A magical forest with glowing mushrooms and fairy creatures",
-  "Portrait of a robot artist painting on a canvas"
+  "A close-up portrait of a golden retriever dog in a park",
+  "Abstract geometric patterns in vibrant rainbow colors"
+];
+
+const PROMPT_TIPS = [
+  "Be specific with details like colors, setting, and lighting",
+  "Include subjects (people, animals, objects) and their actions",
+  "Describe the mood or atmosphere you want to convey",
+  "Mention specific styles like 'photorealistic' or 'watercolor'"
 ];
 
 const PromptInput: React.FC<PromptInputProps> = ({ onSubmit, isGenerating }) => {
   const [prompt, setPrompt] = useState('');
   const [negativePrompt, setNegativePrompt] = useState('');
   const [showNegativePrompt, setShowNegativePrompt] = useState(false);
+  const [showTips, setShowTips] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,10 +49,33 @@ const PromptInput: React.FC<PromptInputProps> = ({ onSubmit, isGenerating }) => 
     <div className="w-full space-y-4">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
+          <div className="flex justify-between items-center mb-1">
+            <label className="block text-sm font-medium">Describe your image</label>
+            <Button 
+              variant="link" 
+              type="button" 
+              className="h-auto p-0 text-muted-foreground text-xs"
+              onClick={() => setShowTips(!showTips)}
+            >
+              {showTips ? 'Hide tips' : 'Show writing tips'}
+            </Button>
+          </div>
+          
+          {showTips && (
+            <div className="bg-muted/50 p-3 rounded-md mb-2 text-sm">
+              <p className="font-medium mb-1">Tips for better results:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                {PROMPT_TIPS.map((tip, index) => (
+                  <li key={index} className="text-muted-foreground text-xs">{tip}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
           <Textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Describe the image you want to generate..."
+            placeholder="Describe the image you want to generate in detail..."
             className="min-h-[120px] resize-none text-lg"
           />
           

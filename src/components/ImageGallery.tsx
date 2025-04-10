@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Download, ZoomIn, X } from 'lucide-react';
-import { GeneratedImage } from '@/services/imageService';
+import { GeneratedImage, downloadImage } from '@/services/imageService';
 import { toast } from 'sonner';
 
 interface ImageGalleryProps {
@@ -31,12 +31,11 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ images }) => {
 
   const handleDownload = (image: GeneratedImage) => {
     try {
-      // Open in new tab for easier downloading
-      window.open(image.url, '_blank');
-      toast.success('Image opened in new tab. Right-click and select "Save image as..." to download');
+      // Use the dedicated download function
+      downloadImage(image.url, `generated-image-${image.seed || Date.now()}.jpg`);
     } catch (error) {
-      console.error('Error opening image:', error);
-      toast.error('Failed to open image');
+      console.error('Error downloading image:', error);
+      toast.error('Failed to download image');
     }
   };
 
@@ -75,25 +74,30 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ images }) => {
                   </div>
                 )}
               </div>
-              <div className="absolute bottom-0 left-0 right-0 p-2 bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex justify-end gap-2">
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
-                  className="h-8 w-8 p-0" 
-                  onClick={() => handleZoom(image.url)}
-                  title="Zoom image"
-                >
-                  <ZoomIn size={16} />
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
-                  className="h-8 w-8 p-0" 
-                  onClick={() => handleDownload(image)}
-                  title="Open image in new tab"
-                >
-                  <ExternalLink size={16} />
-                </Button>
+              <div className="absolute bottom-0 left-0 right-0 p-2 bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex justify-between">
+                <div className="text-xs max-w-[70%] truncate">
+                  {image.prompt}
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="h-8 w-8 p-0" 
+                    onClick={() => handleZoom(image.url)}
+                    title="Zoom image"
+                  >
+                    <ZoomIn size={16} />
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="h-8 w-8 p-0" 
+                    onClick={() => handleDownload(image)}
+                    title="Download image"
+                  >
+                    <Download size={16} />
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

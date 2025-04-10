@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 
 // Model options
@@ -32,104 +31,168 @@ export interface GeneratedImage {
   seed?: number;
 }
 
-// More specific category-to-image mappings with curated IDs that match the category
+// Enhanced category-to-image mappings with specific IDs and more precise keywords
 const CATEGORIES = {
   nature: [
-    { id: 15, keywords: ["mountain", "outdoor", "landscape"] },
-    { id: 33, keywords: ["forest", "trees", "green"] },
-    { id: 37, keywords: ["valley", "scenic", "hills"] },
-    { id: 110, keywords: ["lake", "water", "serene"] },
-    { id: 64, keywords: ["beach", "ocean", "coast"] },
-    { id: 76, keywords: ["flowers", "garden", "blooms"] },
+    { id: 15, keywords: ["mountain", "outdoor", "landscape", "hill", "nature"] },
+    { id: 33, keywords: ["forest", "trees", "green", "woods", "woodland"] },
+    { id: 37, keywords: ["valley", "scenic", "hills", "countryside", "grassland"] },
+    { id: 110, keywords: ["lake", "water", "serene", "pond", "reflection"] },
+    { id: 64, keywords: ["beach", "ocean", "coast", "sea", "sand", "shore"] },
+    { id: 76, keywords: ["flowers", "garden", "blooms", "floral", "botanical"] },
+    { id: 1018, keywords: ["snow", "winter", "cold", "ice", "frost"] },
   ],
   cityscape: [
-    { id: 260, keywords: ["skyline", "downtown", "city"] },
-    { id: 452, keywords: ["buildings", "architecture", "urban"] },
-    { id: 429, keywords: ["street", "road", "city life"] },
-    { id: 172, keywords: ["night city", "lights", "urban night"] },
-    { id: 315, keywords: ["bridge", "infrastructure", "crossing"] },
+    { id: 260, keywords: ["skyline", "downtown", "city", "metropolis", "urban"] },
+    { id: 452, keywords: ["buildings", "architecture", "urban", "structure", "skyscraper"] },
+    { id: 429, keywords: ["street", "road", "city life", "avenue", "boulevard"] },
+    { id: 172, keywords: ["night city", "lights", "urban night", "evening", "nightlife"] },
+    { id: 315, keywords: ["bridge", "infrastructure", "crossing", "span", "connection"] },
   ],
   portrait: [
-    { id: 338, keywords: ["woman", "female", "portrait"] },
-    { id: 823, keywords: ["man", "male", "portrait"] },
-    { id: 660, keywords: ["child", "kid", "young"] },
-    { id: 26, keywords: ["old person", "elderly", "aged"] },
-    { id: 453, keywords: ["group", "people", "crowd"] },
+    { id: 338, keywords: ["woman", "female", "portrait", "girl", "lady"] },
+    { id: 823, keywords: ["man", "male", "portrait", "guy", "gentleman"] },
+    { id: 660, keywords: ["child", "kid", "young", "youth", "toddler"] },
+    { id: 26, keywords: ["old person", "elderly", "aged", "senior", "retiree"] },
+    { id: 453, keywords: ["group", "people", "crowd", "gathering", "audience"] },
+    { id: 177, keywords: ["portrait", "face", "headshot", "person", "model"] },
   ],
   abstract: [
-    { id: 1084, keywords: ["pattern", "geometric", "shapes"] },
-    { id: 447, keywords: ["colorful", "vibrant", "bright"] },
-    { id: 1069, keywords: ["abstract", "artistic", "non-representational"] },
-    { id: 1020, keywords: ["texture", "surface", "material"] },
+    { id: 1084, keywords: ["pattern", "geometric", "shapes", "design", "motif"] },
+    { id: 447, keywords: ["colorful", "vibrant", "bright", "multicolored", "rainbow"] },
+    { id: 1069, keywords: ["abstract", "artistic", "non-representational", "surreal", "modern art"] },
+    { id: 1020, keywords: ["texture", "surface", "material", "background", "canvas"] },
   ],
   animals: [
-    { id: 237, keywords: ["dog", "canine", "pet"] },
-    { id: 40, keywords: ["cat", "feline", "pet"] },
-    { id: 582, keywords: ["bird", "avian", "flying"] },
-    { id: 790, keywords: ["wildlife", "wild animal", "nature"] },
-    { id: 659, keywords: ["horse", "equine", "mammal"] },
+    { id: 237, keywords: ["dog", "canine", "pet", "puppy", "hound"] },
+    { id: 40, keywords: ["cat", "feline", "pet", "kitten", "domestic animal"] },
+    { id: 582, keywords: ["bird", "avian", "flying", "feathered", "wings"] },
+    { id: 790, keywords: ["wildlife", "wild animal", "nature", "fauna", "creature"] },
+    { id: 659, keywords: ["horse", "equine", "mammal", "pony", "stallion"] },
+    { id: 219, keywords: ["bear", "grizzly", "wildlife", "predator", "mammal"] },
+    { id: 433, keywords: ["lion", "big cat", "predator", "jungle", "safari"] },
   ],
   technology: [
-    { id: 0, keywords: ["computer", "tech", "device"] },
-    { id: 48, keywords: ["digital", "screen", "display"] },
-    { id: 160, keywords: ["robot", "ai", "machine"] },
-    { id: 370, keywords: ["futuristic", "sci-fi", "future"] },
-    { id: 1056, keywords: ["gadget", "electronic", "device"] },
+    { id: 0, keywords: ["computer", "tech", "device", "laptop", "digital"] },
+    { id: 48, keywords: ["digital", "screen", "display", "monitor", "electronic"] },
+    { id: 160, keywords: ["robot", "ai", "machine", "automation", "artificial intelligence"] },
+    { id: 370, keywords: ["futuristic", "sci-fi", "future", "advanced", "innovation"] },
+    { id: 1056, keywords: ["gadget", "electronic", "device", "equipment", "smart"] },
+    { id: 404, keywords: ["code", "programming", "software", "development", "technology"] },
   ],
   food: [
-    { id: 292, keywords: ["meal", "dish", "plate"] },
-    { id: 1080, keywords: ["fruit", "healthy", "fresh"] },
-    { id: 225, keywords: ["dessert", "sweet", "cake"] },
-    { id: 493, keywords: ["vegetable", "greens", "produce"] },
-    { id: 132, keywords: ["drink", "beverage", "liquid"] },
+    { id: 292, keywords: ["meal", "dish", "plate", "dinner", "lunch"] },
+    { id: 1080, keywords: ["fruit", "healthy", "fresh", "produce", "nutritious"] },
+    { id: 225, keywords: ["dessert", "sweet", "cake", "pastry", "confection"] },
+    { id: 493, keywords: ["vegetable", "greens", "produce", "healthy", "organic"] },
+    { id: 132, keywords: ["drink", "beverage", "liquid", "refreshment", "cup"] },
+    { id: 42, keywords: ["coffee", "cafe", "espresso", "latte", "brew"] },
   ],
   art: [
-    { id: 200, keywords: ["painting", "artwork", "canvas"] },
-    { id: 349, keywords: ["drawing", "sketch", "illustration"] },
-    { id: 674, keywords: ["sculpture", "statue", "3d art"] },
-    { id: 423, keywords: ["masterpiece", "classic", "famous"] },
-    { id: 628, keywords: ["creative", "artistic", "imaginative"] },
+    { id: 200, keywords: ["painting", "artwork", "canvas", "masterpiece", "artistic"] },
+    { id: 349, keywords: ["drawing", "sketch", "illustration", "graphic", "pencil"] },
+    { id: 674, keywords: ["sculpture", "statue", "3d art", "carving", "monument"] },
+    { id: 423, keywords: ["masterpiece", "classic", "famous", "renowned", "celebrated"] },
+    { id: 628, keywords: ["creative", "artistic", "imaginative", "inventive", "innovative"] },
   ],
   space: [
-    { id: 701, keywords: ["stars", "galaxy", "universe"] },
-    { id: 808, keywords: ["planets", "solar system", "cosmic"] },
-    { id: 683, keywords: ["nebula", "space cloud", "astronomical"] },
-    { id: 717, keywords: ["space", "cosmic", "astronomy"] },
+    { id: 701, keywords: ["stars", "galaxy", "universe", "cosmos", "celestial"] },
+    { id: 808, keywords: ["planets", "solar system", "cosmic", "orbital", "space"] },
+    { id: 683, keywords: ["nebula", "space cloud", "astronomical", "stellar", "cosmic dust"] },
+    { id: 717, keywords: ["space", "cosmic", "astronomy", "interstellar", "void"] },
   ],
   fantasy: [
-    { id: 326, keywords: ["magical", "fantasy", "mythical"] },
-    { id: 611, keywords: ["dragon", "creature", "mythological"] },
-    { id: 867, keywords: ["medieval", "castle", "kingdom"] },
-    { id: 501, keywords: ["fairy", "magical being", "enchanted"] },
+    { id: 326, keywords: ["magical", "fantasy", "mythical", "enchanted", "mystical"] },
+    { id: 611, keywords: ["dragon", "creature", "mythological", "beast", "legendary"] },
+    { id: 867, keywords: ["medieval", "castle", "kingdom", "fortress", "ancient"] },
+    { id: 501, keywords: ["fairy", "magical being", "enchanted", "fantasy creature", "pixie"] },
+    { id: 235, keywords: ["unicorn", "mythical", "fantasy", "magical creature", "legend"] },
+  ],
+  transportation: [
+    { id: 111, keywords: ["car", "vehicle", "automobile", "transportation", "wheels"] },
+    { id: 191, keywords: ["airplane", "aircraft", "flight", "aviation", "flying"] },
+    { id: 1073, keywords: ["train", "locomotive", "railway", "track", "transit"] },
+    { id: 331, keywords: ["boat", "ship", "vessel", "nautical", "sailing"] },
+  ],
+  business: [
+    { id: 119, keywords: ["office", "business", "workspace", "corporate", "professional"] },
+    { id: 1011, keywords: ["meeting", "conference", "discussion", "collaboration", "teamwork"] },
+    { id: 90, keywords: ["laptop", "computer", "work", "business", "desk"] },
+  ],
+  architecture: [
+    { id: 342, keywords: ["modern architecture", "contemporary", "building", "design", "structure"] },
+    { id: 164, keywords: ["church", "religious", "historic", "cathedral", "temple"] },
+    { id: 309, keywords: ["ancient", "historic", "old", "ruins", "archeological"] },
   ]
 };
 
-// Function to find the most relevant image ID based on prompt content
+// Enhanced function to find the most relevant image ID based on prompt content
 const findRelevantImageId = (prompt: string): number => {
   prompt = prompt.toLowerCase();
   
-  // Score each category based on keyword matches
+  // Parse prompt words for more accurate matching
+  const promptWords = prompt.split(/\s+/).filter(word => word.length > 2);
+  
+  // Score each category based on keyword matches with weighting for importance
   const categoryScores = Object.entries(CATEGORIES).map(([categoryName, categoryItems]) => {
     let score = 0;
+    let matches = 0;
+    let bestMatchingId = null;
+    let bestMatchScore = 0;
     
     // For each image in the category, check for keyword matches
     categoryItems.forEach(item => {
+      let itemScore = 0;
+      
+      // Direct phrase match (highest priority)
+      if (item.keywords.some(keyword => prompt.includes(keyword.toLowerCase()))) {
+        itemScore += 5;
+      }
+      
+      // Individual word matches
       item.keywords.forEach(keyword => {
-        if (prompt.includes(keyword.toLowerCase())) {
-          score += 2; // Direct keyword match
-        } else {
-          // Check for partial matches
-          const words = prompt.split(/\s+/);
-          words.forEach(word => {
-            if (keyword.toLowerCase().includes(word) && word.length > 3) {
-              score += 1; // Partial match for longer words
-            }
-          });
-        }
+        const keywordWords = keyword.toLowerCase().split(/\s+/);
+        
+        promptWords.forEach(promptWord => {
+          // Exact word match
+          if (keywordWords.includes(promptWord)) {
+            itemScore += 3;
+          }
+          // Partial word match for longer words
+          else if (promptWord.length > 3) {
+            keywordWords.forEach(keywordWord => {
+              if (keywordWord.includes(promptWord) || promptWord.includes(keywordWord)) {
+                itemScore += 1;
+              }
+            });
+          }
+        });
       });
+      
+      // Track if this item had any matches
+      if (itemScore > 0) {
+        matches++;
+        score += itemScore;
+        
+        // Keep track of the best matching item in this category
+        if (itemScore > bestMatchScore) {
+          bestMatchScore = itemScore;
+          bestMatchingId = item.id;
+        }
+      }
     });
     
-    return { categoryName, score, items: categoryItems };
+    // Adjust score based on distribution of matches across category items
+    if (matches > 0) {
+      // More distributed matches slightly reduce score to favor focused matches
+      score = score * (1 + (matches / categoryItems.length));
+    }
+    
+    return { 
+      categoryName, 
+      score, 
+      bestMatchingId: bestMatchingId || categoryItems[0].id 
+    };
   });
   
   // Sort categories by score (highest first)
@@ -137,10 +200,7 @@ const findRelevantImageId = (prompt: string): number => {
   
   // If we have a clear winner with matches
   if (categoryScores[0].score > 0) {
-    const topCategory = categoryScores[0];
-    // Pick a random image from the top category
-    const randomIndex = Math.floor(Math.random() * topCategory.items.length);
-    return topCategory.items[randomIndex].id;
+    return categoryScores[0].bestMatchingId;
   }
   
   // Fallback if no matches: use a random ID from any category
@@ -149,10 +209,9 @@ const findRelevantImageId = (prompt: string): number => {
   return randomItem.id;
 };
 
-// Mock generation service - in a real app, this would call an actual API
+// Improved generation service
 export const generateImages = async (params: GenerateImageParams): Promise<GeneratedImage[]> => {
   try {
-    // Show a loading toast when starting
     const loadingToast = toast.loading(`Generating ${params.numImages} image(s)...`);
     
     // For demo purposes, simulate an API call with a timeout
@@ -176,9 +235,13 @@ export const generateImages = async (params: GenerateImageParams): Promise<Gener
         prompt: params.prompt,
         seed: randomSeed,
       });
+
+      // Add a slight delay between image generation to simulate a more natural flow
+      if (i < params.numImages - 1) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
     }
     
-    // Dismiss the loading toast and show success toast
     toast.dismiss(loadingToast);
     toast.success(`Successfully generated ${params.numImages} image(s)`);
     
